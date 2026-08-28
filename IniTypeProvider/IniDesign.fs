@@ -18,26 +18,26 @@ module IniDesign =
             | CommentOrEmpty -> state
             | SectionHeader name ->
                 if name = "" then
-                    raise (TypeProviderError($"Empty section name at line {i+1} in {sourceName}.", i+1, 0))
+                    raise (InvalidDataException(sprintf "Empty section name at line %d in %s. (line=%d, column=%d)" (i+1) sourceName (i+1) 0))
                 { state with
                     Current  = Some name
                     Sections = state.Sections |> Map.add name Map.empty }
             | KeyValue(key, value) ->
                 match state.Current with
                 | None ->
-                    raise (TypeProviderError($"Key/value before any section at line {i+1} in {sourceName}.", i+1, 0))
+                    raise (InvalidDataException(sprintf "Key/value before any section at line %d in %s. (line=%d, column=%d)" (i+1) sourceName (i+1) 0))
                 | Some sec ->
                     if key = "" then
-                        raise (TypeProviderError($"Empty key name at line {i+1} in {sourceName}.", i+1, 0))
+                        raise (InvalidDataException(sprintf "Empty key name at line %d in %s. (line=%d, column=%d)" (i+1) sourceName (i+1) 0))
                     let sectionMap = state.Sections |> Map.tryFind sec |> Option.defaultValue Map.empty
                     if sectionMap |> Map.containsKey key then
-                        raise (TypeProviderError($"Duplicate key '{key}' in section [{sec}] at line {i+1} in {sourceName}.", i+1, 0))
+                        raise (InvalidDataException(sprintf "Duplicate key '%s' in section [%s] at line %d in %s. (line=%d, column=%d)" key sec (i+1) sourceName (i+1) 0))
                     { state with
                         Sections =
                             state.Sections
                             |> Map.add sec (sectionMap |> Map.add key value) }
             | InvalidLine text ->
-                raise (TypeProviderError($"Unrecognized line {i+1} in {sourceName}: '{text}'", i+1, 0))
+                raise (InvalidDataException(sprintf "Unrecognized line %d in %s: '%s' (line=%d, column=%d)" (i+1) sourceName text (i+1) 0))
 
         { Current = None; Sections = Map.empty }
         |> fun init -> lines |> Array.indexed |> Array.fold folder init
@@ -45,7 +45,7 @@ module IniDesign =
 
     let parseIniFile path =
         if not (File.Exists path) then
-            raise (TypeProviderError($"INI file '{path}' not found.", 0, 0))
+            raise (InvalidDataException(sprintf "INI file '%s' not found. (line=%d, column=%d)" path 0 0))
         File.ReadAllLines path |> parseIniText path
 
     let parseDefaultsText (text : string) =
