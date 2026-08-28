@@ -1,0 +1,24 @@
+﻿namespace IniTypedProvider
+
+open IniDesign
+
+type IniRuntimeSection = IniRuntimeSection of Map<string,string>
+
+type IniRuntimeDocument = IniRuntimeDocument of Map<string, IniRuntimeSection> with
+    member this.TryGetSection name =
+        let (IniRuntimeDocument sections) = this
+        Map.tryFind name sections
+
+    member this.TryGet(section, key) =
+        match this.TryGetSection section with
+        | None -> None
+        | Some (IniRuntimeSection m) -> Map.tryFind key m
+
+module RuntimeLoad =
+
+    let loadRuntime path : IniRuntimeDocument =
+        let ini = parseIniFile path
+        let sections =
+            ini
+            |> Map.map (fun _ keys -> IniRuntimeSection keys)
+        IniRuntimeDocument sections
