@@ -11,6 +11,8 @@ open DesignMerge
 open RuntimeLoad
 open Getters
 open Defaults
+open SchemaValidation
+
 
 [<TypeProvider>]
 type IniProvider (config : TypeProviderConfig) as this =
@@ -75,6 +77,9 @@ type IniProvider (config : TypeProviderConfig) as this =
                                 Map.empty
 
                         let finalKeyInfos = buildKeyInfos ini defaultsBlock perKeyDefaults
+
+                        validateSchema finalKeyInfos ini defaultsBlock
+
 
                         let provided =
                             ProvidedTypeDefinition(asm, ns, typeName2, Some typeof<IniRuntimeDocument>, isErased = true)
