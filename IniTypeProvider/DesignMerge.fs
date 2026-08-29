@@ -20,15 +20,15 @@ module DesignMerge =
                 (defaultsBlock : Map<string,Map<string,string>>)
                 (perKeyDefaults : Map<string * string, DefaultValue>) =
 
-        let secKeys (m:Map<'a, Map<'b, 'c>>):Set<'a * 'b> =
+        let sectionKeys (m:Map<'a, Map<'b, 'c>>):Set<'a * 'b> =
             m
             |> Map.toSeq
             |> Seq.collect (fun (s:'a, ks:Map<'b, 'c>) -> ks |> Map.toSeq |> Seq.map (fun (k:'b,_) -> (s,k)))
             |> Set.ofSeq
 
         Set.unionMany [
-            secKeys ini
-            secKeys defaultsBlock
+            sectionKeys ini
+            sectionKeys defaultsBlock
             perKeyDefaults
             |> Map.toSeq
             |> Seq.map fst
@@ -37,17 +37,17 @@ module DesignMerge =
 
     let buildKeyInfos (ini:Map<string, Map<string, string>>) (defaultsBlock:Map<string, Map<string, string>>) (perKeyDefaults:Map<(string * string), DefaultValue>):KeyDesignInfo list =
         allKeys ini defaultsBlock perKeyDefaults
-        |> Seq.map (fun (sec:string,key:string) ->
+        |> Seq.map (fun (section:string,key:string) ->
             let typedDefaultOpt:DefaultValue option =
                 perKeyDefaults
-                |> Map.tryFind (sec,key)
+                |> Map.tryFind (section,key)
             let iniValueOpt:string option =
                 ini
-                |> Map.tryFind sec
+                |> Map.tryFind section
                 |> Option.bind (Map.tryFind key)
             let blockDefaultOpt:string option =
                 defaultsBlock
-                |> Map.tryFind sec
+                |> Map.tryFind section
                 |> Option.bind (Map.tryFind key)
 
             let inferredType:Type =
@@ -57,7 +57,7 @@ module DesignMerge =
                 | None, None, Some raw -> Parsing.inferFromString raw
                 | None, None, None -> typeof<string>
 
-            { Section      = sec
+            { Section      = section
               Key          = key
               InferredType = inferredType
               TypedDefault = typedDefaultOpt
