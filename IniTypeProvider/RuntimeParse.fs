@@ -1,12 +1,14 @@
 ﻿namespace IniTypedProvider
 
+open System
+
 open IniDesign
 open Parsing
 
 type IniRuntimeSection = IniRuntimeSection of Map<string,string>
 
 type IniRuntimeDocument = IniRuntimeDocument of Map<string, IniRuntimeSection> with
-    member this.TryGetSection name =
+    member this.TryGetSection (name:string):IniRuntimeSection option =
         let (IniRuntimeDocument sections) = this
         Map.tryFind name sections
 
@@ -16,10 +18,11 @@ type IniRuntimeDocument = IniRuntimeDocument of Map<string, IniRuntimeSection> w
         | Some (IniRuntimeSection m) -> Map.tryFind key m
 
 module RuntimeLoad =
-    let loadRuntime path : IniRuntimeDocument =
-        let ini = parseIniFile path
-        let sections =
-            ini |> Map.map (fun _ keys -> IniRuntimeSection keys)
+    let loadRuntime (path:string):IniRuntimeDocument =
+        let ini:Map<string, Map<string, string>> = parseIniFile path
+        let sections:Map<string, IniRuntimeSection> =
+            ini
+            |> Map.map (fun _ (keys:Map<string, string>) -> IniRuntimeSection keys)
         IniRuntimeDocument sections
 
 // ------------------------------------------------------------
@@ -27,10 +30,10 @@ module RuntimeLoad =
 // ------------------------------------------------------------
 module RuntimeParse =
 
-    let parseBool (raw : string) =
-        match System.Boolean.TryParse raw with
+    let parseBool (raw:string):bool option =
+        match Boolean.TryParse raw with
         | true, v -> Some v
         | _ -> None
 
-    let parseNumeric (t : System.Type) (raw : string) =
+    let parseNumeric (t:Type) (raw:string):obj option =
         Parsing.parseRuntime t raw

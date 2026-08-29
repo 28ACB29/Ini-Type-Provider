@@ -1,5 +1,7 @@
 ﻿namespace IniTypedProvider
 
+open System
+
 type DefaultValue =
     | DefaultInt32 of int
     | DefaultInt64 of int64
@@ -18,7 +20,7 @@ type DefaultValue =
     | DefaultBool of bool
 
 module Defaults =
-    let typeOfDefault =
+    let typeOfDefault:(DefaultValue -> Type) =
         function
         | DefaultInt32 _   -> typeof<int>
         | DefaultInt64 _   -> typeof<int64>
@@ -36,7 +38,7 @@ module Defaults =
         | DefaultString _  -> typeof<string>
         | DefaultBool _    -> typeof<bool>
 
-    let boxDefault =
+    let boxDefault:(DefaultValue -> objnull) =
         function
         | DefaultInt32 v   -> box v
         | DefaultInt64 v   -> box v

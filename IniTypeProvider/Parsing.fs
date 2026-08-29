@@ -63,7 +63,7 @@ module Parsing =
     // -----------------------------
     // Type inference
     // -----------------------------
-    let inferFromString (raw:string) =
+    let inferFromString (raw:string):Type =
         match raw with
         | Int32Val _   -> typeof<int>
         | Int64Val _   -> typeof<int64>
@@ -83,7 +83,7 @@ module Parsing =
     // -----------------------------
     // Runtime parsing
     // -----------------------------
-    let parseRuntime (t : Type) (raw : string) : obj option =
+    let parseRuntime (t:Type) (raw:string):obj option =
         match raw with
         | Int32Val v   when t = typeof<int>      -> Some (box v)
         | Int64Val v   when t = typeof<int64>    -> Some (box v)

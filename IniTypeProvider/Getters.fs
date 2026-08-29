@@ -1,6 +1,7 @@
 ﻿namespace IniTypedProvider
 
 open Microsoft.FSharp.Quotations
+
 open Defaults
 open DesignMerge
 open Parsing
@@ -8,7 +9,7 @@ open RuntimeParse
 
 module Getters =
 
-    let getterExpr (info : KeyDesignInfo) (docExpr : Expr) =
+    let getterExpr (info:KeyDesignInfo) (docExpr:Expr):Expr =
         let sec, key = info.Section, info.Key
         let t = info.InferredType
         let propType = propertyType info
