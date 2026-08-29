@@ -19,8 +19,6 @@
 	<Compile Include="RuntimeParse.fs" />
 	<Compile Include="Getters.fs" />
 	<Compile Include="IniProvider.fs" />
-	<None Include="Script.fsx" />
-	<Compile Include="Library.fs" />
   </ItemGroup>
 
 </Project>
