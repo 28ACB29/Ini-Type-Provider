@@ -15,7 +15,7 @@
 	<Compile Include="IniDesign.fs" />
 	<Compile Include="DesignMerge.fs" />
 	<Compile Include="SchemaValidation.fs" />
-	<Compile Include="Runtime.fs" />
+	<Compile Include="RuntimeLoad.fs" />
 	<Compile Include="RuntimeParse.fs" />
 	<Compile Include="Getters.fs" />
 	<Compile Include="IniProvider.fs" />
